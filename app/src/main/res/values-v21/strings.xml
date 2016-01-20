@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="popular">Popular</string>
-    <string name="top_rated">Top Rated</string>
+    <string name="popular">Sort By Popular</string>
+    <string name="top_rated">Sort By Top Rated</string>
+    <string name="favourites">Show Favourite Movies</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.brightlight.padzmj.frontpage.Movies;
+package com.brightlight.padzmj.frontpage.Movies.Detail;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;

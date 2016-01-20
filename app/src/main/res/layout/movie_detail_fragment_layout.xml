@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".Movies.Detail.MovieDetailedActivity"
+    android:id="@+id/detail_container">
+
+    <android.support.v4.widget.Space
+        android:id="@+id/detail_space_1"
+        android:layout_width="130dp"
+        android:layout_height="90dp" />
+
+    <TextView
+        android:id="@+id/detail_movie_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/detail_spacing_poster"
+        android:layout_marginStart="@dimen/detail_spacing_poster"
+        android:layout_marginTop="@dimen/detail_spacing_medium"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+    <TextView
+        android:id="@+id/detail_release_year"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/detail_movie_title"
+        android:layout_alignStart="@+id/detail_movie_title"
+        android:layout_below="@+id/detail_movie_title"
+        android:layout_marginTop="@dimen/detail_spacing_small" />
+
+
+    <TextView
+        android:id="@+id/detail_user_rating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/detail_release_year"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/detail_movie_title"
+        android:layout_marginEnd="@dimen/detail_spacing_small"
+        android:layout_marginRight="@dimen/detail_spacing_small"
+        android:layout_marginTop="@dimen/detail_spacing_small" />
+
+    <ImageView
+        android:id="@+id/detail_user_rating_icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignBottom="@id/detail_user_rating"
+        android:layout_marginEnd="@dimen/detail_spacing_extra_small"
+        android:layout_marginRight="@dimen/detail_spacing_extra_small"
+        android:layout_toLeftOf="@id/detail_user_rating"
+        android:layout_toStartOf="@id/detail_user_rating" />
+
+    <TextView
+        android:id="@+id/detail_runtime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/detail_release_year"
+        android:layout_below="@+id/detail_movie_title"
+        android:layout_marginEnd="@dimen/detail_spacing_medium"
+        android:layout_marginRight="@dimen/detail_spacing_medium"
+        android:layout_marginTop="@dimen/detail_spacing_small"
+        android:layout_toLeftOf="@id/detail_user_rating_icon"
+        android:layout_toStartOf="@id/detail_user_rating_icon" />
+
+    <ImageView
+        android:id="@+id/detail_runtime_icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignBottom="@id/detail_runtime"
+        android:layout_marginEnd="@dimen/detail_spacing_extra_small"
+        android:layout_marginRight="@dimen/detail_spacing_extra_small"
+        android:layout_toLeftOf="@id/detail_runtime"
+        android:layout_toStartOf="@id/detail_runtime" />
+
+    <TextView
+        android:id="@+id/detail_synopsis"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/detail_space_1"
+        android:layout_marginLeft="@dimen/detail_spacing_medium"
+        android:layout_marginStart="@dimen/detail_spacing_medium"
+        android:layout_marginTop="@dimen/detail_spacing_medium"
+        android:maxLines="7" />
+
+
+    <RelativeLayout
+        android:id="@+id/content_Recycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/detail_synopsis">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/contentRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            xmlns:android="http://schemas.android.com/apk/res/android" />
+    </RelativeLayout>
+
+    <!--<FrameLayout-->
+        <!--android:id="@+id/trailersFrameLayout"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content" />-->
+
+    <!--<FrameLayout-->
+        <!--android:id="@+id/reviewsFrameLayout"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@id/trailersFrameLayout" />-->
+
+    <!--<RelativeLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content">-->
+    <!-- -->
+    <!--</RelativeLayout>-->
+    <!--<TextView-->
+    <!--android:id="@+id/trailersTextViewTitle"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_below="@id/detail_synopsis"-->
+    <!--android:layout_marginTop="@dimen/detail_spacing_medium"-->
+    <!--android:textAppearance="@style/TextAppearance.AppCompat.Title"-->
+    <!--android:layout_alignLeft="@id/detail_synopsis"-->
+    <!--android:layout_alignStart="@id/detail_synopsis"/>-->
+
+
+    <!--<FrameLayout-->
+    <!--android:id="@+id/trailersFrameLayout"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_below="@id/detail_synopsis" />-->
+
+
+    <!--tools:layout="@layout/custom_trailers_list_item"-->
+
+
+    <!--<TextView-->
+    <!--android:id="@+id/reviewsTextViewTitle"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_below="@id/trailersFrameLayout"-->
+    <!--android:textAppearance="@style/TextAppearance.AppCompat.Title"-->
+    <!--android:layout_alignLeft="@id/trailersTextViewTitle"-->
+    <!--android:layout_alignStart="@id/trailersTextViewTitle"/>-->
+
+
+    <!--<FrameLayout-->
+    <!--android:id="@+id/reviewsFrameLayout"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_below="@id/trailersFrameLayout" />-->
+
+
+    <!--tools:layout="@layout/custom_reviews_list_item"-->
+</RelativeLayout>
