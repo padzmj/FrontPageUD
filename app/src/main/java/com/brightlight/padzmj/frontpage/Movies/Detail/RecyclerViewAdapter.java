@@ -27,11 +27,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private static final int TRAILER = 0, REVIEW = 1;
 
     private Context context;
-    private LayoutInflater layoutInflater;
     private ArrayList<Object> trailersAndReviews;
 
     public RecyclerViewAdapter (Context context, ArrayList<Object> trailersAndReviews){
-        layoutInflater = LayoutInflater.from(context);
         this.context = context;
         this.trailersAndReviews = trailersAndReviews;
     }
@@ -110,7 +108,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             final int pos = position + 1;
 
-            holder.trailerThumbnailPos.setText("Trailer " + pos);
+            //holder.trailerThumbnailPos.setText("Trailer " + pos);
 
             holder.setClickListener(new TrailersAdapter.ItemClickListener() {
                 @Override

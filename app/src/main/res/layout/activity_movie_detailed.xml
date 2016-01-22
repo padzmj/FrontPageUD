@@ -1,72 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context=".Movies.Detail.MovieDetailedActivity"
-    android:id="@+id/movie_detailed_coordinatorLayout">
-
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/detail_appbar_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
-        <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/toolbar_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
-            app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:toolbarId="@+id/toolbar">
-
-            <ImageView
-                android:id="@+id/detail_backdrop_poster"
-                android:layout_width="match_parent"
-                android:layout_height="320dp"
-                android:contentDescription="@string/detailed_image_description"
-                android:scaleType="centerCrop"
-                app:layout_collapseMode="parallax"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed" />
-
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar_main_detail"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
-        </android.support.design.widget.CollapsingToolbarLayout>
-
-    </android.support.design.widget.AppBarLayout>
-
-    <ImageView
-        android:id="@+id/detail_poster"
-        android:layout_width="100dp"
-        android:layout_height="150dp"
-        android:layout_marginLeft="@dimen/detail_spacing_medium"
-        android:layout_marginStart="@dimen/detail_spacing_medium"
-        android:contentDescription="@string/moviePosterDescription"
-        android:elevation="10dp"
-        android:scaleType="centerCrop"
-        app:layout_anchor="@id/detail_appbar_layout"
-        app:layout_anchorGravity="bottom|left|start" />
-
+<RelativeLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
     <include
-        layout="@layout/content_movie_detailed"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+    layout="@layout/content_movie_detailed"/>
+</RelativeLayout>
+<!--<android.support.design.widget.CoordinatorLayout-->
+    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:fitsSystemWindows="true"-->
+    <!--tools:context=".Movies.Detail.MovieDetailedActivity"-->
+    <!--android:id="@+id/movie_detailed_coordinatorLayout">-->
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/add_to_favourites_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_add_white_18dp" />
+    <!--<android.support.design.widget.AppBarLayout-->
+        <!--android:id="@+id/detail_appbar_layout"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:fitsSystemWindows="true"-->
+        <!--android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">-->
 
-</android.support.design.widget.CoordinatorLayout>
+        <!--<android.support.design.widget.CollapsingToolbarLayout-->
+            <!--android:id="@+id/toolbar_layout"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:fitsSystemWindows="true"-->
+            <!--app:contentScrim="?attr/colorPrimary"-->
+            <!--app:layout_scrollFlags="scroll|exitUntilCollapsed"-->
+            <!--app:toolbarId="@+id/toolbar">-->
+
+            <!--<ImageView-->
+                <!--android:id="@+id/detail_backdrop_poster"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="320dp"-->
+                <!--android:contentDescription="@string/detailed_image_description"-->
+                <!--android:scaleType="centerCrop"-->
+                <!--app:layout_collapseMode="parallax"-->
+                <!--app:layout_scrollFlags="scroll|exitUntilCollapsed" />-->
+
+            <!--<android.support.v7.widget.Toolbar-->
+                <!--android:id="@+id/toolbar_main_detail"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="?attr/actionBarSize"-->
+                <!--app:layout_collapseMode="pin"-->
+                <!--app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />-->
+
+        <!--</android.support.design.widget.CollapsingToolbarLayout>-->
+
+    <!--</android.support.design.widget.AppBarLayout>-->
+
+    <!--<ImageView-->
+        <!--android:id="@+id/detail_poster"-->
+        <!--android:layout_width="100dp"-->
+        <!--android:layout_height="150dp"-->
+        <!--android:layout_marginLeft="@dimen/detail_spacing_medium"-->
+        <!--android:layout_marginStart="@dimen/detail_spacing_medium"-->
+        <!--android:contentDescription="@string/moviePosterDescription"-->
+        <!--android:elevation="10dp"-->
+        <!--android:scaleType="centerCrop"-->
+        <!--app:layout_anchor="@id/detail_appbar_layout"-->
+        <!--app:layout_anchorGravity="bottom|left|start" />-->
+
+    <!--<include-->
+        <!--layout="@layout/content_movie_detailed"-->
+        <!--app:layout_behavior="@string/appbar_scrolling_view_behavior" />-->
+
+    <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:id="@+id/add_to_favourites_fab"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="bottom|end"-->
+        <!--android:layout_margin="@dimen/fab_margin"-->
+        <!--android:src="@drawable/ic_add_white_18dp" />-->
+
+<!--</android.support.design.widget.CoordinatorLayout>-->

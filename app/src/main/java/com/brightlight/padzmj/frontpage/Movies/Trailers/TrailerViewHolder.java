@@ -20,7 +20,7 @@ public class TrailerViewHolder extends RecyclerView.ViewHolder implements View.O
         super(itemView);
 
         thumbnail = (ImageView) itemView.findViewById(R.id.trailerThumbnail);
-        trailerThumbnailPos = (TextView) itemView.findViewById(R.id.trailerThumbnailPosition);
+        //trailerThumbnailPos = (TextView) itemView.findViewById(R.id.trailerThumbnailPosition);
         itemView.setOnClickListener(this);
     }
 

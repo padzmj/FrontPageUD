@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +20,8 @@ import android.widget.Toast;
 import com.brightlight.padzmj.frontpage.Movies.Reviews.Review;
 import com.brightlight.padzmj.frontpage.Movies.Trailers.Trailer;
 import com.brightlight.padzmj.frontpage.R;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,17 +47,25 @@ import io.realm.RealmResults;
 public class MovieDetailedFragment extends Fragment {
 
     static Context mContext;
-    String id, posterPath, backdropPath, movieTitle, releaseYear, movieSynopsis, userRating, runTime;
+    private String id, posterPath, backdropPath, movieTitle, releaseYear, movieSynopsis, userRating, runTime;
     List<Review> reviewList = new ArrayList<>();
     List<Trailer> trailerList = new ArrayList<>();
 
-    TextView title, release, synopsis, rating, runtime, reviewsTextViewTitle, trailersTextViewTitle;
+    static String INFO = "INFO";
+
+    TextView title, release, synopsis, rating, runtime, reviewsTextViewTitle, trailersAndReviewsTextViewTitle;
     ImageView poster, backdropPoster, ratingIcon, runtimeIcon;
     RecyclerView recyclerView;
 
     View view;
 
     ArrayList<Object> items = new ArrayList<>();
+
+    RealmList<Movie> realmMovieList = new RealmList<>();
+
+    Realm thisRealm, realm;
+    Movie movie;
+
 
     public static MovieDetailedFragment newInstance(Context context) {
         MovieDetailedFragment.mContext = context;
@@ -79,17 +91,22 @@ public class MovieDetailedFragment extends Fragment {
         synopsis = (TextView) rootView.findViewById(R.id.detail_synopsis);
         rating = (TextView) rootView.findViewById(R.id.detail_user_rating);
         runtime = (TextView) rootView.findViewById(R.id.detail_runtime);
-        poster = (ImageView) rootView.findViewById(R.id.detail_poster);
-        backdropPoster = (ImageView) rootView.findViewById(R.id.detail_backdrop_poster);
+        poster = (ImageView) container.findViewById(R.id.detail_poster);
+        backdropPoster = (ImageView) container.findViewById(R.id.detail_backdrop_poster);
         ratingIcon = (ImageView) rootView.findViewById(R.id.detail_user_rating_icon);
         runtimeIcon = (ImageView) rootView.findViewById(R.id.detail_runtime_icon);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.contentRecyclerView);
-        //reviewsTextViewTitle = (TextView) findViewById(R.id.reviewsTextViewTitle);
-        //trailersTextViewTitle = (TextView) findViewById(R.id.trailersTextViewTitle);
+        trailersAndReviewsTextViewTitle = (TextView) rootView.findViewById(R.id.trailersAndReviewsTextViewTitle);
+        final FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.add_to_favourites_fab);
+        String trailersAndReviewsTitle = getResources().getString(R.string.trailersAndReviewsHeaderTitle);
 
-        String reviewsTitle = getResources().getString(R.string.reviewsHeaderTitle);
-        String trailersTitle = getResources().getString(R.string.trailersHeaderTitle);
-        String space = getResources().getString(R.string.space_placeholder);
+        ImageView poster, backdropPoster;
+
+        poster = (ImageView) rootView.findViewById(R.id.detail_poster);
+        backdropPoster = (ImageView) rootView.findViewById(R.id.detail_backdrop_poster);
+
+        realm = Realm.getInstance(mContext);
+        movie = null;
 
         Bundle bundle = this.getArguments();
 
@@ -103,7 +120,11 @@ public class MovieDetailedFragment extends Fragment {
             userRating = bundle.getString("userRating");
             runTime = bundle.getString("runtime");
 
-            Realm realm = Realm.getInstance(mContext);
+
+            Glide.with(this).load(backdropPath).diskCacheStrategy(DiskCacheStrategy.ALL).into(backdropPoster);
+            Glide.with(this).load(posterPath).diskCacheStrategy(DiskCacheStrategy.ALL).into(poster);
+
+
             realm.executeTransaction(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
@@ -143,8 +164,59 @@ public class MovieDetailedFragment extends Fragment {
 //                }
                 }
             });
+
+            if (savedInstanceState == null) {
+
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+
+                        RealmQuery<Movie> movieRealmQuery = realm.where(Movie.class);
+
+                        final RealmResults<Movie> results = movieRealmQuery.equalTo("id", id).findAll();
+
+                        for (Movie results1 : results) {
+                            movie = results1;
+                        }
+
+                        fab.setOnClickListener(new View.OnClickListener() {
+                                                   @Override
+                                                   public void onClick(final View view) {
+
+                                                       if (movie != null) {
+                                                           Snackbar.make(view, movie.getTitle() + " Already in Favourites", Snackbar.LENGTH_LONG).show();
+                                                       } else {
+                                                           thisRealm = Realm.getInstance(mContext);
+                                                           thisRealm.executeTransaction(new Realm.Transaction() {
+                                                               @Override
+                                                               public void execute(Realm realm) {
+                                                                   Movie realmMovie = realm.createObject(Movie.class);
+
+                                                                   realmMovie.setId(id);
+                                                                   realmMovie.setBackdropPath(backdropPath);
+                                                                   realmMovie.setPosterPath(posterPath);
+                                                                   realmMovie.setTitle(movieTitle);
+                                                                   realmMovie.setReleaseYear(releaseYear);
+                                                                   realmMovie.setSynopsis(movieSynopsis);
+                                                                   realmMovie.setUserRating(userRating);
+                                                                   realmMovie.setFavouriteMovie(true);
+
+                                                                   realmMovieList.add(realmMovie);
+                                                                   Snackbar.make(view, realmMovie.getTitle() + " Added to Favourites", Snackbar.LENGTH_LONG).show();
+                                                               }
+                                                           });
+
+
+                                                       }
+
+
+                                                   }
+                                               }
+                        );
+                    }
+                });
+            }
         }
-//        Toast.makeText(mContext, items.size()+" Reviews & Trailers", Toast.LENGTH_LONG).show();
 
         RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(mContext, items);
         recyclerView.setHasFixedSize(true);
@@ -157,9 +229,10 @@ public class MovieDetailedFragment extends Fragment {
         release.setText(releaseYear);
         synopsis.setText(this.movieSynopsis);
         rating.setText(userRating);
+        trailersAndReviewsTextViewTitle.setText(trailersAndReviewsTitle);
+
         //runtime.setText(runTime);
         //reviewsTextViewTitle.setText(reviewsTitle);
-        //trailersTextViewTitle.setText(trailersTitle);
 
         return rootView;
     }

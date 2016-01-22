@@ -1,17 +1,15 @@
 package com.brightlight.padzmj.frontpage.Movies.Detail;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.brightlight.padzmj.frontpage.Model.MySQL.MovieContract.MovieEntry;
 import com.brightlight.padzmj.frontpage.R;
 
 import java.util.ArrayList;
@@ -37,7 +35,6 @@ public class MovieFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //getDataFromDB();
     }
 
     @Override
@@ -50,40 +47,10 @@ public class MovieFragment extends Fragment {
 
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.movieListRecyclerView);
 
-        recyclerView.setAdapter(new MoviesAdapter(getActivity(),movieList, two_pane));
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((Callback) getActivity()).onSelectedListener();
-            }
-        });
+        recyclerView.setAdapter(new MoviesAdapter(getActivity(), movieList, two_pane));
+        if(!two_pane) recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        else  recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
         return rootView;
-    }
-
-    private void getDataFromDB() {
-        Uri movieUri = MovieEntry.buildMovie();
-        Cursor cursor = getActivity().getApplicationContext().getContentResolver().query(movieUri, null, null, null, null);
-
-        //Cursor update = getActivity().getApplicationContext().getContentResolver().update(movieUri, )
-
-        if (cursor != null) {
-            //if (cursor.moveToFirst()){
-            while (cursor.moveToNext()) {
-                for (int i = 0; i < cursor.getCount(); i++) {
-                    Movie movie = new Movie();
-                    movie.setTitle(cursor.getString(4));
-                    movieList.add(movie);
-                }
-            }
-
-
-            //}
-        }
-    }
-
-    interface Callback {
-        void onSelectedListener();
     }
 
 }

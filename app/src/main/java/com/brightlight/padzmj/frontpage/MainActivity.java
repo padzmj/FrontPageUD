@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -66,7 +67,18 @@ public class MainActivity extends AppCompatActivity {
         realmFavouriteMovieResults = realm.where(Movie.class).equalTo("favouriteMovie", true).findAll();
         realmMovieDBResults = realm.where(Movie.class).findAll();
 
-        twoPane = ((findViewById(R.id.fragment_master_detail) != null));
+        if(findViewById(R.id.fragment_master_detail) != null){
+
+            twoPane = true;
+
+            if(savedInstanceState!=null){
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_master_detail, new MovieDetailedFragment())
+                        .commit();
+            }
+        }else {
+            twoPane = false;
+        }
 
         DownloadMoviesDB downloadMoviesDB = new DownloadMoviesDB(this);
         downloadMoviesDB.execute(POPULAR_PARAM);
@@ -153,6 +165,11 @@ public class MainActivity extends AppCompatActivity {
 
         fragmentTransaction.replace(R.id.frameLayout, movieFragment);
         fragmentTransaction.commit();
+    }
+
+    public void startDetailFragment(int id, Fragment fragment){
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(id, fragment).commit();
     }
 
     private class DownloadMoviesDB extends AsyncTask<String, Void, List<Movie>> {

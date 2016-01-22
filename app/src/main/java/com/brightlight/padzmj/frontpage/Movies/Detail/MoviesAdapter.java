@@ -2,13 +2,13 @@ package com.brightlight.padzmj.frontpage.Movies.Detail;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
+import com.brightlight.padzmj.frontpage.MainActivity;
 import com.brightlight.padzmj.frontpage.R;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -24,8 +24,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MovieViewHolder> {
     private Context context;
     private LayoutInflater layoutInflater;
     private List<Movie> movieList = new ArrayList<>();
-    boolean two_pane;
-    ViewGroup parent;
+    boolean two_pane, startup = true;
 
     public MoviesAdapter(Context context, List<Movie> moviesList, boolean two_pane){
         layoutInflater = LayoutInflater.from(context);
@@ -36,8 +35,11 @@ public class MoviesAdapter extends RecyclerView.Adapter<MovieViewHolder> {
 
     @Override
     public MovieViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = layoutInflater.inflate(R.layout.custom_movie_list_item, parent, false);
-        this.parent = parent;
+        View view;
+
+        if(!two_pane) view = layoutInflater.inflate(R.layout.custom_movie_list_item, parent, false);
+        else view = layoutInflater.inflate(R.layout.custom_movie_list_item_two_pane, parent, false);
+
         return new MovieViewHolder(view);
     }
 
@@ -58,13 +60,12 @@ public class MoviesAdapter extends RecyclerView.Adapter<MovieViewHolder> {
         final String runtime = movieList.get(position).getRuntime();
         final boolean favourite = movieList.get(position).isFavouriteMovie();
 
-        holder.title.setText(title);
-        holder.releaseYear.setText(releaseYear);
-
-        Log.i("Author", "Movies VH");
         Glide.with(context).load(movieList.get(position).getPosterPath()).centerCrop().diskCacheStrategy(DiskCacheStrategy.ALL).into(holder.thumbnail);
 
         if(!two_pane){
+            holder.title.setText(title);
+            holder.releaseYear.setText(releaseYear);
+
             holder.setClickListener(new ItemClickListener() {
                 @Override
                 public void onClicked(View v, int position) {
@@ -83,15 +84,36 @@ public class MoviesAdapter extends RecyclerView.Adapter<MovieViewHolder> {
                 }
             });
         }else{
+            if(startup) startFragment(0); startup = false;
+
             holder.setClickListener(new ItemClickListener() {
                 @Override
                 public void onClicked(View v, int position) {
-                    Toast.makeText(context, "Start Fragment!", Toast.LENGTH_LONG).show();
+                    startFragment(position);
                 }
             });
         }
 
     }
+    private void startFragment(int position){
+        MovieDetailedFragment movieDetailedFragment = new MovieDetailedFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("id", movieList.get(position).getId());
+        bundle.putString("posterPath", movieList.get(position).getPosterPath());
+        bundle.putString("backdropPath", movieList.get(position).getBackdropPath());
+        bundle.putString("movieTitle", movieList.get(position).getTitle());
+        bundle.putString("releaseYear", movieList.get(position).getReleaseYear());
+        bundle.putString("synopsis", movieList.get(position).getSynopsis());
+        bundle.putString("userRating", movieList.get(position).getUserRating());
+        bundle.putString("runtime", movieList.get(position).getRuntime());
+        bundle.putBoolean("favourite", movieList.get(position).isFavouriteMovie());
+        movieDetailedFragment.setArguments(bundle);
+
+        MainActivity activity = (MainActivity) context;
+        activity.startDetailFragment(R.id.fragment_master_detail, movieDetailedFragment);
+
+    }
+
     @Override
     public int getItemCount() {
         return movieList.size();

@@ -10,7 +10,8 @@ import io.realm.annotations.PrimaryKey;
 /**
  * Created by PadzMJ on 22/10/2015.
  */
-public class Movie extends RealmObject {
+public class Movie extends RealmObject{
+
     @PrimaryKey
     private String id;
 
@@ -113,4 +114,5 @@ public class Movie extends RealmObject {
     public void setFavouriteMovie(boolean favouriteMovie) {
         this.favouriteMovie = favouriteMovie;
     }
+
 }

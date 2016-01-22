@@ -11,6 +11,6 @@
     <string name="moviePosterDescription">Movie Poster</string>
     <string name="space_placeholder"> </string>
     <string name="title_activity_review">ReviewActivity</string>
-    <string name="trailersHeaderTitle">Trailers</string>
+    <string name="trailersAndReviewsHeaderTitle">Trailers &amp; Reviews</string>
     <string name="trailer_thumbnail">trailerThumbnail</string>
 </resources>

@@ -1,25 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:padding="@dimen/detail_spacing_small">
 
     <ImageView
         android:id="@+id/trailerThumbnail"
-        android:layout_width="200dp"
+        android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:layout_centerInParent="true"
         android:contentDescription="@string/trailer_thumbnail"
-        android:padding="@dimen/detail_spacing_extra_small" />
+        android:layout_centerInParent="true"/>
 
-    <TextView
-        android:id="@+id/trailerThumbnailPosition"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/trailerThumbnail"
-        android:layout_centerHorizontal="true"
-        android:padding="@dimen/detail_spacing_small"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+    <!--<TextView-->
+        <!--android:text="Hello"-->
+        <!--android:id="@+id/trailerThumbnailPosition"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@id/trailerThumbnail"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginTop="@dimen/detail_spacing_large"-->
+        <!--android:textAppearance="@style/TextAppearance.AppCompat.Small" />-->
 </RelativeLayout>
-
-    <!--android:layout_below="@id/trailerThumbnail"--><!--android:layout_alignLeft="@id/trailerThumbnail"--><!--android:layout_alignStart="@id/trailerThumbnail"--><!--android:layout_alignRight="@id/trailerThumbnail"--><!--android:layout_alignEnd="@id/trailerThumbnail"-->

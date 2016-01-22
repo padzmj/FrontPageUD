@@ -2,22 +2,13 @@ package com.brightlight.padzmj.frontpage.Movies.Detail;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.widget.ImageView;
 
 import com.brightlight.padzmj.frontpage.R;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.RealmQuery;
-import io.realm.RealmResults;
 
 
 public class MovieDetailedActivity extends AppCompatActivity {
@@ -37,13 +28,13 @@ public class MovieDetailedActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detailed);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main_detail);
-        setSupportActionBar(toolbar);
-
-        ImageView poster, backdropPoster;
-
-        poster = (ImageView) findViewById(R.id.detail_poster);
-        backdropPoster = (ImageView) findViewById(R.id.detail_backdrop_poster);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main_detail);
+//        setSupportActionBar(toolbar);
+//
+//        ImageView poster, backdropPoster;
+//
+//        poster = (ImageView) findViewById(R.id.detail_poster);
+//        backdropPoster = (ImageView) findViewById(R.id.detail_backdrop_poster);
 
         Bundle bundle = getIntent().getExtras();
 
@@ -61,58 +52,58 @@ public class MovieDetailedActivity extends AppCompatActivity {
             userRating = bundle.getString("userRating");
             runTime = bundle.getString("runtime");
             favourite = bundle.getBoolean("favourite");
-
-            Glide.with(this).load(backdropPath).diskCacheStrategy(DiskCacheStrategy.ALL).into(backdropPoster);
-            Glide.with(this).load(posterPath).diskCacheStrategy(DiskCacheStrategy.ALL).into(poster);
+//
+//            Glide.with(this).load(backdropPath).diskCacheStrategy(DiskCacheStrategy.ALL).into(backdropPoster);
+//            Glide.with(this).load(posterPath).diskCacheStrategy(DiskCacheStrategy.ALL).into(poster);
         }
 
-        if (savedInstanceState == null) {
-            newRealm = Realm.getInstance(context);
-            newRealm.beginTransaction();
-
-            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.add_to_favourites_fab);
-
-            RealmQuery<Movie> movieRealmQuery = newRealm.where(Movie.class);
-
-            final RealmResults<Movie> results = movieRealmQuery.equalTo("id", movieID).findAll();
-
-            for (Movie results1 : results) {
-                movie = results1;
-            }
-
-            fab.setOnClickListener(new View.OnClickListener() {
-                                       @Override
-                                       public void onClick(View view) {
-
-                                           if (movie != null) {
-                                               Snackbar.make(view, movie.getTitle() + " Already in Favourites", Snackbar.LENGTH_LONG).show();
-                                           } else {
-                                               realm = Realm.getInstance(context);
-                                               realm.beginTransaction();
-                                               Movie realmMovie = realm.createObject(Movie.class);
-
-                                               realmMovie.setId(movieID);
-                                               realmMovie.setBackdropPath(backdropPath);
-                                               realmMovie.setPosterPath(posterPath);
-                                               realmMovie.setTitle(movieTitle);
-                                               realmMovie.setReleaseYear(releaseYear);
-                                               realmMovie.setSynopsis(movieSynopsis);
-                                               realmMovie.setUserRating(userRating);
-                                               realmMovie.setFavouriteMovie(true);
-
-                                               realmMovieList.add(realmMovie);
-                                               Snackbar.make(view, realmMovie.getTitle() + " Added to Favourites", Snackbar.LENGTH_LONG).show();
-                                               realm.commitTransaction();
-
-                                           }
-
-
-                                       }
-                                   }
-            );
-
-
-            newRealm.commitTransaction();
+//        if (savedInstanceState == null) {
+//            newRealm = Realm.getInstance(context);
+//            newRealm.beginTransaction();
+//
+//            FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.add_to_favourites_fab);
+//
+//            RealmQuery<Movie> movieRealmQuery = newRealm.where(Movie.class);
+//
+//            final RealmResults<Movie> results = movieRealmQuery.equalTo("id", movieID).findAll();
+//
+//            for (Movie results1 : results) {
+//                movie = results1;
+//            }
+//
+//            fab.setOnClickListener(new View.OnClickListener() {
+//                                       @Override
+//                                       public void onClick(View view) {
+//
+//                                           if (movie != null) {
+//                                               Snackbar.make(view, movie.getTitle() + " Already in Favourites", Snackbar.LENGTH_LONG).show();
+//                                           } else {
+//                                               realm = Realm.getInstance(context);
+//                                               realm.beginTransaction();
+//                                               Movie realmMovie = realm.createObject(Movie.class);
+//
+//                                               realmMovie.setId(movieID);
+//                                               realmMovie.setBackdropPath(backdropPath);
+//                                               realmMovie.setPosterPath(posterPath);
+//                                               realmMovie.setTitle(movieTitle);
+//                                               realmMovie.setReleaseYear(releaseYear);
+//                                               realmMovie.setSynopsis(movieSynopsis);
+//                                               realmMovie.setUserRating(userRating);
+//                                               realmMovie.setFavouriteMovie(true);
+//
+//                                               realmMovieList.add(realmMovie);
+//                                               Snackbar.make(view, realmMovie.getTitle() + " Added to Favourites", Snackbar.LENGTH_LONG).show();
+//                                               realm.commitTransaction();
+//
+//                                           }
+//
+//
+//                                       }
+//                                   }
+//            );
+//
+//
+//            newRealm.commitTransaction();
 
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
@@ -120,7 +111,7 @@ public class MovieDetailedActivity extends AppCompatActivity {
             movieDetailedFragment.setArguments(bundle);
             fragmentTransaction.replace(R.id.fragment_master_detail, movieDetailedFragment);
             fragmentTransaction.commit();
-        }
+
 
     }
 }
