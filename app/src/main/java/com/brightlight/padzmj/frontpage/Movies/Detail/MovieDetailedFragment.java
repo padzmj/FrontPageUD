@@ -47,24 +47,28 @@ import io.realm.RealmResults;
 public class MovieDetailedFragment extends Fragment {
 
     static Context mContext;
+
+    //UI
+    protected TextView titleTV, releaseTV, synopsisTV, ratingTV, runtimeTV, trailersAndReviewsTextViewTitle;
+    protected ImageView posterIV, backdropPosterIV, ratingIcon, runtimeIcon;
+    private RecyclerView recyclerView;
+    private FloatingActionButton fab;
+
+    //UI Variables
     private String id, posterPath, backdropPath, movieTitle, releaseYear, movieSynopsis, userRating, runTime;
-    List<Review> reviewList = new ArrayList<>();
-    List<Trailer> trailerList = new ArrayList<>();
 
-    static String INFO = "INFO";
 
-    TextView title, release, synopsis, rating, runtime, reviewsTextViewTitle, trailersAndReviewsTextViewTitle;
-    ImageView poster, backdropPoster, ratingIcon, runtimeIcon;
-    RecyclerView recyclerView;
+    //Review and Trailer Objects
+    protected ArrayList<Object> items = new ArrayList<>();
+    private List<Review> reviewList = new ArrayList<>();
+    private List<Trailer> trailerList = new ArrayList<>();
 
-    View view;
+    //Realm
+    private Realm thisRealm, realm;
+    private RealmList<Movie> realmMovieList = new RealmList<>();
 
-    ArrayList<Object> items = new ArrayList<>();
-
-    RealmList<Movie> realmMovieList = new RealmList<>();
-
-    Realm thisRealm, realm;
-    Movie movie;
+    private View view;
+    protected Movie movie;
 
 
     public static MovieDetailedFragment newInstance(Context context) {
@@ -85,29 +89,29 @@ public class MovieDetailedFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.movie_detail_fragment_layout, container, false);
 
-        view = (View) rootView.findViewById(R.id.movie_detailed_coordinatorLayout);
-        title = (TextView) rootView.findViewById(R.id.detail_movie_title);
-        release = (TextView) rootView.findViewById(R.id.detail_release_year);
-        synopsis = (TextView) rootView.findViewById(R.id.detail_synopsis);
-        rating = (TextView) rootView.findViewById(R.id.detail_user_rating);
-        runtime = (TextView) rootView.findViewById(R.id.detail_runtime);
-        poster = (ImageView) container.findViewById(R.id.detail_poster);
-        backdropPoster = (ImageView) container.findViewById(R.id.detail_backdrop_poster);
+        //UI
+        view =  rootView.findViewById(R.id.movie_detailed_coordinatorLayout);
+        titleTV = (TextView) rootView.findViewById(R.id.detail_movie_title);
+        releaseTV = (TextView) rootView.findViewById(R.id.detail_release_year);
+        synopsisTV = (TextView) rootView.findViewById(R.id.detail_synopsis);
+        ratingTV = (TextView) rootView.findViewById(R.id.detail_user_rating);
+        runtimeTV = (TextView) rootView.findViewById(R.id.detail_runtime);
+        posterIV = (ImageView) rootView.findViewById(R.id.detail_poster);
+        backdropPosterIV = (ImageView) rootView.findViewById(R.id.detail_backdrop_poster);
         ratingIcon = (ImageView) rootView.findViewById(R.id.detail_user_rating_icon);
         runtimeIcon = (ImageView) rootView.findViewById(R.id.detail_runtime_icon);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.contentRecyclerView);
         trailersAndReviewsTextViewTitle = (TextView) rootView.findViewById(R.id.trailersAndReviewsTextViewTitle);
-        final FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.add_to_favourites_fab);
+        fab = (FloatingActionButton) rootView.findViewById(R.id.add_to_favourites_fab);
+
+
         String trailersAndReviewsTitle = getResources().getString(R.string.trailersAndReviewsHeaderTitle);
 
-        ImageView poster, backdropPoster;
-
-        poster = (ImageView) rootView.findViewById(R.id.detail_poster);
-        backdropPoster = (ImageView) rootView.findViewById(R.id.detail_backdrop_poster);
-
+        //Realm instance and movie to load realm into
         realm = Realm.getInstance(mContext);
         movie = null;
 
+        //Bundle from Adapter
         Bundle bundle = this.getArguments();
 
         if (bundle != null) {
@@ -121,9 +125,11 @@ public class MovieDetailedFragment extends Fragment {
             runTime = bundle.getString("runtime");
 
 
-            Glide.with(this).load(backdropPath).diskCacheStrategy(DiskCacheStrategy.ALL).into(backdropPoster);
-            Glide.with(this).load(posterPath).diskCacheStrategy(DiskCacheStrategy.ALL).into(poster);
+            Glide.with(this).load(backdropPath).diskCacheStrategy(DiskCacheStrategy.ALL).into(backdropPosterIV);
+            Glide.with(this).load(posterPath).diskCacheStrategy(DiskCacheStrategy.ALL).into(posterIV);
 
+            DownloadMovieInfo downloadMovieInfo = new DownloadMovieInfo(mContext);
+            downloadMovieInfo.execute(id);
 
             realm.executeTransaction(new Realm.Transaction() {
                 @Override
@@ -134,6 +140,7 @@ public class MovieDetailedFragment extends Fragment {
                     RealmResults<Trailer> trailerRealmResults = trailerRealmQuery.equalTo("trailerMovieID", id).findAll();
                     RealmResults<Review> reviewRealmResults = reviewRealmQuery.equalTo("reviewMovieID", id).findAll();
 
+                    //If trailers and/or reviews add into items or download them!
                     if (trailerRealmResults.size() != 0) {
                         for (Trailer trailer : trailerRealmResults) {
                             items.add(trailer);
@@ -144,24 +151,6 @@ public class MovieDetailedFragment extends Fragment {
                             items.add(review);
                         }
                     } else trailersReviews(id);
-
-//                if((reviewRealmResults.size()==0)&&(trailerRealmResults.size()==0)){
-//                    trailersReviews(id);
-//                }else{
-//
-//
-////                    for(Review review1:reviewRealmResults){
-////                        if(review1.getReviewMovieID().equals(id)){
-////                            reviewList.add(review1);
-////                        }
-////                    }
-////                    for(Trailer trailer:trailerRealmResults){
-////                        Log.i("HEREWE", trailer.getTrailerURL());
-////                        if(trailer.getTrailerMovieID().equals(id)){
-////                            trailerList.add(trailer);
-////                        }
-////                    }
-//                }
                 }
             });
 
@@ -171,8 +160,8 @@ public class MovieDetailedFragment extends Fragment {
                     @Override
                     public void execute(Realm realm) {
 
+                        //Find selected movie by ID and make it the local Movie
                         RealmQuery<Movie> movieRealmQuery = realm.where(Movie.class);
-
                         final RealmResults<Movie> results = movieRealmQuery.equalTo("id", id).findAll();
 
                         for (Movie results1 : results) {
@@ -180,59 +169,57 @@ public class MovieDetailedFragment extends Fragment {
                         }
 
                         fab.setOnClickListener(new View.OnClickListener() {
-                                                   @Override
-                                                   public void onClick(final View view) {
+                           @Override
+                           public void onClick(final View view) {
 
-                                                       if (movie != null) {
-                                                           Snackbar.make(view, movie.getTitle() + " Already in Favourites", Snackbar.LENGTH_LONG).show();
-                                                       } else {
-                                                           thisRealm = Realm.getInstance(mContext);
-                                                           thisRealm.executeTransaction(new Realm.Transaction() {
-                                                               @Override
-                                                               public void execute(Realm realm) {
-                                                                   Movie realmMovie = realm.createObject(Movie.class);
+                               //If local movie is populated then Movie is in Favourites,
+                               //If not then add to favourites
+                               if (movie != null) {
+                                   Snackbar.make(view, movie.getTitle() + " Already in Favourites", Snackbar.LENGTH_LONG).show();
+                               } else {
+                                   thisRealm = Realm.getInstance(mContext);
+                                   thisRealm.executeTransaction(new Realm.Transaction() {
+                                       @Override
+                                       public void execute(Realm realm) {
+                                           Movie realmMovie = realm.createObject(Movie.class);
 
-                                                                   realmMovie.setId(id);
-                                                                   realmMovie.setBackdropPath(backdropPath);
-                                                                   realmMovie.setPosterPath(posterPath);
-                                                                   realmMovie.setTitle(movieTitle);
-                                                                   realmMovie.setReleaseYear(releaseYear);
-                                                                   realmMovie.setSynopsis(movieSynopsis);
-                                                                   realmMovie.setUserRating(userRating);
-                                                                   realmMovie.setFavouriteMovie(true);
+                                           realmMovie.setId(id);
+                                           realmMovie.setBackdropPath(backdropPath);
+                                           realmMovie.setPosterPath(posterPath);
+                                           realmMovie.setTitle(movieTitle);
+                                           realmMovie.setReleaseYear(releaseYear);
+                                           realmMovie.setSynopsis(movieSynopsis);
+                                           realmMovie.setUserRating(userRating);
+                                           realmMovie.setFavouriteMovie(true);
 
-                                                                   realmMovieList.add(realmMovie);
-                                                                   Snackbar.make(view, realmMovie.getTitle() + " Added to Favourites", Snackbar.LENGTH_LONG).show();
-                                                               }
-                                                           });
-
-
-                                                       }
-
-
-                                                   }
-                                               }
-                        );
+                                           realmMovieList.add(realmMovie);
+                                           Snackbar.make(view, realmMovie.getTitle() + " Added to Favourites", Snackbar.LENGTH_LONG).show();
+                                       }
+                                   });
+                               }
+                           }
+                       });
                     }
                 });
             }
         }
 
+        //UI Stuff
+        if (userRating != null) ratingIcon.setBackgroundResource(R.drawable.ic_star_black_18dp);
+        runtimeIcon.setBackgroundResource(R.drawable.ic_access_time_black_18dp);
+        titleTV.setText(movieTitle);
+        releaseTV.setText(releaseYear);
+        synopsisTV.setText(this.movieSynopsis);
+        ratingTV.setText(userRating);
+        trailersAndReviewsTextViewTitle.setText(trailersAndReviewsTitle);
+//        runtime.setText(runTime);
+
+        //RecyclerView
         RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(mContext, items);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
 
-        if (userRating != null) ratingIcon.setBackgroundResource(R.drawable.ic_star_black_18dp);
-        //runtimeIcon.setBackgroundResource(R.drawable.ic_access_time_black_18dp);
-        title.setText(movieTitle);
-        release.setText(releaseYear);
-        synopsis.setText(this.movieSynopsis);
-        rating.setText(userRating);
-        trailersAndReviewsTextViewTitle.setText(trailersAndReviewsTitle);
-
-        //runtime.setText(runTime);
-        //reviewsTextViewTitle.setText(reviewsTitle);
 
         return rootView;
     }
@@ -387,14 +374,6 @@ public class MovieDetailedFragment extends Fragment {
             if (trailerList.size() == 0) {
 
                 Toast.makeText(mContext, "No Trailers", Toast.LENGTH_LONG).show();
-                //trailersTextViewTitle.setVisibility(View.VISIBLE);
-
-//                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-//
-//
-//                TrailersFragment trailersFragment = TrailersFragment.newInstance(mContext, trailerList);
-//                fragmentTransaction.replace(R.id.trailersFrameLayout, trailersFragment);
-//                fragmentTransaction.commit();
             }
         }
     }
@@ -541,17 +520,108 @@ public class MovieDetailedFragment extends Fragment {
             reviewList = reviews;
 
             if (reviewList.size() == 0) {
-
-
                 Toast.makeText(mContext, "No Reviews", Toast.LENGTH_LONG).show();
-                //reviewsTextViewTitle.setVisibility(View.VISIBLE);
-
-//                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-//
-//                ReviewsFragment reviewsFragment = ReviewsFragment.newInstance(mContext, reviewList);
-//                fragmentTransaction.replace(R.id.reviewsFrameLayout, reviewsFragment);
-//                fragmentTransaction.commit();
             }
+        }
+    }
+
+    public class DownloadMovieInfo extends AsyncTask<String, Void, String> {
+
+        private String LOG_TAG = DownloadMovieInfo.class.getSimpleName();
+        private String API_KEY = getString(R.string.api_key);
+        private String movieJSONStr;
+
+        private Context mContext;
+
+        public DownloadMovieInfo(Context context) {
+            mContext = context;
+        }
+
+
+        private String movieData(String parsedJSONStr) throws JSONException {
+
+            final String id = "id";
+            final String dbRuntime = "runtime";
+
+
+            JSONObject jsonObject = new JSONObject(parsedJSONStr);
+
+//            Get a Whole load of stuff in the future
+//            Only compromise is the use of the radio to get one String Object
+//            Will look for alternative
+
+            return jsonObject.getString(dbRuntime);
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            try {
+                URL url = new URL("https://api.themoviedb.org/3/movie/" + params[0] + "?api_key=" + API_KEY);
+
+                //URL url = new URL(uri.toString());
+
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                // Read the input stream into a String
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuffer buffer = new StringBuffer();
+                if (inputStream == null) {
+                    return null;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line + "\n");
+                }
+
+                if (buffer.length() == 0) {
+                    return null;
+                }
+                movieJSONStr = buffer.toString();
+
+                Log.v(LOG_TAG, movieJSONStr);
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "Error ", e);
+                return null;
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e(LOG_TAG, "Error closing stream", e);
+                    }
+                }
+
+                try {
+                    return movieData(movieJSONStr);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String runtime) {
+
+            //runtime to hours and mins
+            int mins = Integer.parseInt(runtime);
+            int hours = mins/60;
+            int minutes = mins % 60;
+
+            String time = hours +"."+minutes+"hrs";
+
+            runtimeTV.setText(time);
         }
     }
 }

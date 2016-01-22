@@ -58,9 +58,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         switch (getItemViewType(position)){
 
+//            Check the view type
             case TRAILER:
-            TrailerViewHolder trailerViewHolder = (TrailerViewHolder) holder;
-            configureTrailers(trailerViewHolder, position);
+                TrailerViewHolder trailerViewHolder = (TrailerViewHolder) holder;
+                configureTrailers(trailerViewHolder, position);
             break;
 
             case REVIEW:
@@ -89,6 +90,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     Intent reviewIntent = new Intent(context, ReviewActivity.class);
                     reviewIntent.putExtra("author", author);
                     reviewIntent.putExtra("content", content);
+                    reviewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(reviewIntent);
                 }
             });
@@ -114,6 +116,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 @Override
                 public void onClicked(View v, int position) {
                     Intent trailerVideoIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    trailerVideoIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(trailerVideoIntent);
                 }
             });

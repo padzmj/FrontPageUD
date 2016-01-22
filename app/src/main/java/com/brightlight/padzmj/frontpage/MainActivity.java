@@ -34,19 +34,19 @@ import java.util.Date;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String POPULAR_PARAM = "popular";
     private static final String TOP_RATED_PARAM = "top_rated";
-    private static final String LOG_NAME = MainActivity.class.getSimpleName();
-
-    final ArrayList<String> list = new ArrayList<>();
 
     Realm realm;
     RealmResults<Movie> realmFavouriteMovieResults;
-    RealmResults<Movie> realmMovieDBResults;
+
+    //Does Nothing Thus Far
+    RealmList<Movie> realmList = new RealmList<>();
 
     Toolbar toolbar;
 
@@ -62,10 +62,10 @@ public class MainActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        realm = Realm.getInstance(this);
+        DownloadMoviesDB downloadMoviesDB = new DownloadMoviesDB(this);
+        downloadMoviesDB.execute(POPULAR_PARAM);
 
-        realmFavouriteMovieResults = realm.where(Movie.class).equalTo("favouriteMovie", true).findAll();
-        realmMovieDBResults = realm.where(Movie.class).findAll();
+        realm = Realm.getInstance(this);
 
         if(findViewById(R.id.fragment_master_detail) != null){
 
@@ -79,11 +79,6 @@ public class MainActivity extends AppCompatActivity {
         }else {
             twoPane = false;
         }
-
-        DownloadMoviesDB downloadMoviesDB = new DownloadMoviesDB(this);
-        downloadMoviesDB.execute(POPULAR_PARAM);
-
-
 //        Toast.makeText(this, realmMovieDBResults.size() + "  DB Results", Toast.LENGTH_LONG).show();
 //        Toast.makeText(this, realmFavouriteMovieResults.size()+"  DB Favourites", Toast.LENGTH_LONG).show();
 //        Uri movieUri = MovieEntry.buildMovie();
@@ -107,29 +102,23 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        DownloadMoviesDB popular = new DownloadMoviesDB(this);
-        DownloadMoviesDB top_rated = new DownloadMoviesDB(this);
+        DownloadMoviesDB downloadMoviesDB = new DownloadMoviesDB(this);
+
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_popular) {
             toolbar.setTitle("Popular");
-            popular.execute(POPULAR_PARAM);
+            downloadMoviesDB.execute(POPULAR_PARAM);
             return true;
         } else if (id == R.id.action_top_rated) {
             toolbar.setTitle("Top Rated");
-            top_rated.execute(TOP_RATED_PARAM);
+            downloadMoviesDB.execute(TOP_RATED_PARAM);
             return true;
         } else if (id == R.id.action_favourites) {
-
-            //Toast.makeText(this, results + " Results", Toast.LENGTH_LONG).show();
+            realmFavouriteMovieResults = realm.where(Movie.class).equalTo("favouriteMovie", true).findAll();
 
             if (realmFavouriteMovieResults.size() != 0) {
                 toolbar.setTitle("Favourites");
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-
-                MovieFragment movieFragment = MovieFragment.newInstance(getApplication(), realmFavouriteMovieResults, twoPane);
-
-                fragmentTransaction.replace(R.id.fragment_navigation, movieFragment);
-                fragmentTransaction.commit();
+                launchMoviesFragment(realmFavouriteMovieResults);
             } else {
                 Snackbar.make(mainCoordinatorLayout, "No Favourite Movies", Snackbar.LENGTH_LONG).show();
             }
@@ -138,38 +127,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    void launchMoviesFragment(List<Movie> movies) {
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-
-        MovieFragment movieFragment = MovieFragment.newInstance(getApplication(), movies, twoPane);
-
-        fragmentTransaction.replace(R.id.fragment_navigation, movieFragment);
-        fragmentTransaction.commit();
-    }
-
-    void launchMoviesTwoPaneFragment(List<Movie> movies) {
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-
-        fragmentTransaction.replace(R.id.fragment_navigation, MovieFragment.newInstance(getApplicationContext(), movies, twoPane));
-        fragmentTransaction.replace(R.id.fragment_master_detail, MovieDetailedFragment.newInstance(getApplicationContext()));
-        fragmentTransaction.commit();
-    }
-
-    void launchMoviesFromDB(RealmResults<Movie> movieDBRealmList) {
-
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-
-        MovieFragment movieFragment = MovieFragment.newInstance(getApplication(), movieDBRealmList, twoPane);
-
-        fragmentTransaction.replace(R.id.frameLayout, movieFragment);
-        fragmentTransaction.commit();
-    }
-
-    public void startDetailFragment(int id, Fragment fragment){
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(id, fragment).commit();
     }
 
     private class DownloadMoviesDB extends AsyncTask<String, Void, List<Movie>> {
@@ -216,8 +173,8 @@ public class MainActivity extends AppCompatActivity {
                 final String movieReleaseYear = jsonMovie.getString(dbReleaseDate);
                 final String movieSynopsis = jsonMovie.getString(dbOverview);
                 final String movieRating = jsonMovie.getString(dbRating);
-//                String movieRuntime = jsonMovie.getString("runtime");
-                Movie movie = new Movie();
+                //final String movieRuntime = jsonMovie.getString("runtime");
+                final Movie movie = new Movie();
 
                 Date date = new Date();
 
@@ -237,8 +194,17 @@ public class MainActivity extends AppCompatActivity {
                 movie.setReleaseYear(year);
                 movie.setSynopsis(movieSynopsis);
                 movie.setUserRating(movieRating);
+                //movie.setRuntime(movieRuntime);
                 movie.setFavouriteMovie(false);
                 movieList.add(movie);
+
+                Realm realm1 = Realm.getInstance(context);
+                realm1.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        realmList.add(movie);
+                    }
+                });
             }
 
 //            if ( cVVector.size() > 0 ) {
@@ -347,5 +313,27 @@ public class MainActivity extends AppCompatActivity {
                 launchMoviesTwoPaneFragment(movies);
             }
         }
+    }
+
+    public void startDetailFragment(int id, Fragment fragment){
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(id, fragment).commit();
+    }
+
+    void launchMoviesFragment(List<Movie> movies) {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+
+        MovieFragment movieFragment = MovieFragment.newInstance(getApplication(), movies, twoPane);
+
+        fragmentTransaction.replace(R.id.fragment_navigation, movieFragment);
+        fragmentTransaction.commit();
+    }
+
+    void launchMoviesTwoPaneFragment(List<Movie> movies) {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+
+        fragmentTransaction.replace(R.id.fragment_navigation, MovieFragment.newInstance(getApplicationContext(), movies, twoPane));
+        fragmentTransaction.replace(R.id.fragment_master_detail, MovieDetailedFragment.newInstance(getApplicationContext()));
+        fragmentTransaction.commit();
     }
 }

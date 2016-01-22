@@ -20,10 +20,11 @@ import java.util.List;
  */
 public class MovieFragment extends Fragment {
     private static List<Movie> movieList = new ArrayList<>();
-    ArrayList<String> movieTitles = new ArrayList<>();
     static boolean two_pane;
+    private static Context context;
 
     public static MovieFragment newInstance(Context context, List<Movie> movieList, boolean pane){
+        MovieFragment.context = context;
         MovieFragment.movieList = movieList;
         MovieFragment.two_pane = pane;
         return new MovieFragment();
@@ -41,15 +42,14 @@ public class MovieFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        //movieTitles = getArguments().getStringArrayList("movieTitles");
-
         View rootView = inflater.inflate(R.layout.movie_fragment_layout, container, false);
 
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.movieListRecyclerView);
-
         recyclerView.setAdapter(new MoviesAdapter(getActivity(), movieList, two_pane));
+
         if(!two_pane) recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         else  recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
+
         return rootView;
     }
 
